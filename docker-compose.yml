@@ -1,0 +1,36 @@
+# Docker Compose lets us run the backend and frontend together with one command.
+
+services:
+  backend:
+    # Build the backend image from backend/Dockerfile.
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+    # Give the container a clear name in Docker Desktop.
+    container_name: team806-backend
+
+    # Load backend environment variables from backend/.env.
+    env_file:
+      - ./backend/.env
+
+    # Map host port 8000 to container port 8000.
+    ports:
+      - "8000:8000"
+
+  frontend:
+    # Build the frontend image from frontend/Dockerfile.
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+    # Give the container a clear name in Docker Desktop.
+    container_name: team806-frontend
+
+    # Start the frontend after the backend service has been started.
+    depends_on:
+      - backend
+
+    # Map host port 4173 to container port 4173.
+    ports:
+      - "4173:4173"

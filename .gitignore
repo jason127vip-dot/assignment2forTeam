@@ -1,0 +1,6 @@
+.env
+.env.local
+backend/.env
+backend/.env.local
+frontend/.env.local
+*.sqlite3
