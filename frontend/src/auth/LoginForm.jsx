@@ -19,6 +19,7 @@ function LoginForm({ onAuthenticated }) {
     setIsSubmitting(true);
 
     try {
+      const { username, password } = form;
       const data = await apiRequest("/auth/login/", {
         method: "POST",
         body: JSON.stringify(form),
