@@ -9,7 +9,6 @@ from .serializers_register import RegisterSerializer
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
-
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -18,6 +17,7 @@ class RegisterView(APIView):
         return Response(
             {
                 "token": token.key,
+                "test": token.key,
                 "user": {
                     "id": user.id,
                     "username": user.username,
