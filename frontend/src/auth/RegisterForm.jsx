@@ -21,6 +21,8 @@ function RegisterForm({ onAuthenticated }) {
     try {
       const data = await apiRequest("/auth/register/", {
         method: "POST",
+        //method: "POST",
+        //method: "POST",
         body: JSON.stringify(form),
       });
       onAuthenticated(data);
@@ -71,7 +73,7 @@ function RegisterForm({ onAuthenticated }) {
       {error && <p className="form-error">{error}</p>}
 
       <button className="primary-action" type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Please wait..." : "Create account"}
+        {isSubmitting ? "Please wait for seconds..." : "Create account"}
       </button>
     </form>
   );
