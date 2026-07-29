@@ -25,4 +25,8 @@ jobs:
 workflows:
   docker-build-workflow:
     jobs:
-      - docker-build
+      - docker-build:
+          filters:
+            branches:
+              only:
+                - main

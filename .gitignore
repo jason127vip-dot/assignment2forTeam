@@ -5,3 +5,8 @@ backend/db.sqlite3
 __pycache__/
 *.pyc
 *bakcopy
+.env
+.env.local
+**/.env
+**/.env.local
+!**/.env.example
