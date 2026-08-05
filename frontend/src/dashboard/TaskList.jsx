@@ -37,6 +37,8 @@ function TaskList({ tasks, error, isLoading, onRefresh, onUpdate, onRemove, onEr
   }
 
   async function updateTaskStatus(task, status) {
+    onError("");
+
     try {
       await onUpdate(task.id, { status });
     } catch (err) {
@@ -49,6 +51,8 @@ function TaskList({ tasks, error, isLoading, onRefresh, onUpdate, onRemove, onEr
     if (!confirmed) {
       return;
     }
+
+    onError("");
 
     try {
       await onRemove(task.id);
