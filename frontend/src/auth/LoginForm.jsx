@@ -2,10 +2,16 @@ import { useState } from "react";
 import { apiRequest } from "../api/client";
 
 function LoginForm({ onAuthenticated }) {
+  const savedUsername = localStorage.getItem("rememberedUsername") || "";
+
   const [form, setForm] = useState({
-    username: "",
+    username: savedUsername,
     password: "",
   });
+
+  const [rememberUsername, setRememberUsername] = useState(
+    Boolean(savedUsername)
+  );
 
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,7 +25,6 @@ function LoginForm({ onAuthenticated }) {
       [name]: value,
     }));
 
-    // Clear the previous error when the user changes a field.
     if (error) {
       setError("");
     }
@@ -48,15 +53,17 @@ function LoginForm({ onAuthenticated }) {
     event.preventDefault();
     setError("");
 
-    if (!validateForm()) {
+    if (isSubmitting || !validateForm()) {
       return;
     }
 
     setIsSubmitting(true);
 
+    const trimmedUsername = form.username.trim();
+
     try {
       const loginDetails = {
-        username: form.username.trim(),
+        username: trimmedUsername,
         password: form.password,
       };
 
@@ -65,11 +72,27 @@ function LoginForm({ onAuthenticated }) {
         body: JSON.stringify(loginDetails),
       });
 
+      if (rememberUsername) {
+        localStorage.setItem("rememberedUsername", trimmedUsername);
+      } else {
+        localStorage.removeItem("rememberedUsername");
+      }
+
       onAuthenticated(data);
     } catch (err) {
       setError(
-        err.message || "Login failed. Please check your details and try again."
+        err.message ||
+          "Login failed. Please check your username and password and try again."
       );
+
+      // Clear the password after an unsuccessful login attempt.
+      setForm((current) => ({
+        ...current,
+        password: "",
+      }));
+
+      // Return the password input to its hidden state.
+      setShowPassword(false);
     } finally {
       setIsSubmitting(false);
     }
@@ -85,9 +108,11 @@ function LoginForm({ onAuthenticated }) {
         value={form.username}
         onChange={updateField}
         autoComplete="username"
+        maxLength={50}
         disabled={isSubmitting}
         aria-invalid={Boolean(error)}
         required
+        autoFocus
       />
 
       <label htmlFor="login-password">Password</label>
@@ -108,11 +133,21 @@ function LoginForm({ onAuthenticated }) {
         type="button"
         aria-pressed={showPassword}
         aria-controls="login-password"
-        disabled={isSubmitting}
+        disabled={isSubmitting || !form.password}
         onClick={() => setShowPassword((current) => !current)}
       >
         {showPassword ? "Hide password" : "Show password"}
       </button>
+
+      <label className="remember-username">
+        <input
+          type="checkbox"
+          checked={rememberUsername}
+          disabled={isSubmitting}
+          onChange={(event) => setRememberUsername(event.target.checked)}
+        />
+        Remember username
+      </label>
 
       {error && (
         <p className="form-error" role="alert">
