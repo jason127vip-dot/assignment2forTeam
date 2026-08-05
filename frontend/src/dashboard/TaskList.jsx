@@ -5,6 +5,10 @@ const EMPTY_EDIT_FORM = { title: "", description: "", status: "todo" };
 function TaskList({ tasks, error, isLoading, onRefresh, onUpdate, onRemove, onError }) {
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editForm, setEditForm] = useState(EMPTY_EDIT_FORM);
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  const filteredTasks =
+    statusFilter === "all" ? tasks : tasks.filter((task) => task.status === statusFilter);
 
   function startEditing(task) {
     setEditingTaskId(task.id);
@@ -33,6 +37,8 @@ function TaskList({ tasks, error, isLoading, onRefresh, onUpdate, onRemove, onEr
   }
 
   async function updateTaskStatus(task, status) {
+    onError("");
+
     try {
       await onUpdate(task.id, { status });
     } catch (err) {
@@ -46,6 +52,8 @@ function TaskList({ tasks, error, isLoading, onRefresh, onUpdate, onRemove, onEr
       return;
     }
 
+    onError("");
+
     try {
       await onRemove(task.id);
     } catch (err) {
@@ -57,9 +65,21 @@ function TaskList({ tasks, error, isLoading, onRefresh, onUpdate, onRemove, onEr
     <section className="task-list" aria-label="Tasks">
       <div className="section-heading">
         <h2>My tasks</h2>
-        <button className="text-action" type="button" onClick={onRefresh}>
-          Refresh
-        </button>
+        <div className="task-actions">
+          <select
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+            aria-label="Filter tasks by status"
+          >
+            <option value="all">All tasks</option>
+            <option value="todo">To Do</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+          <button className="text-action" type="button" onClick={onRefresh}>
+            Refresh
+          </button>
+        </div>
       </div>
 
       {error && <p className="form-error">{error}</p>}
@@ -67,8 +87,11 @@ function TaskList({ tasks, error, isLoading, onRefresh, onUpdate, onRemove, onEr
       {!isLoading && tasks.length === 0 && (
         <p className="empty-state">No tasks yet. Create your first task.</p>
       )}
+      {!isLoading && tasks.length > 0 && filteredTasks.length === 0 && (
+        <p className="empty-state">No tasks match the selected status.</p>
+      )}
       <div className="task-stack">
-        {tasks.map((task) => (
+        {filteredTasks.map((task) => (
           <article className="task-card" key={task.id}>
             {editingTaskId === task.id ? (
               <form className="edit-task-form" onSubmit={(event) => saveTask(event, task.id)}>
