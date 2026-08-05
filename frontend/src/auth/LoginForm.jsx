@@ -5,6 +5,7 @@ function LoginForm({ onAuthenticated }) {
   const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   function updateField(event) {
     setForm((current) => ({
@@ -48,7 +49,7 @@ function LoginForm({ onAuthenticated }) {
         Password
         <input
           name="password"
-          type="password"
+          type={showPassword ? "text" : "password"}
           value={form.password}
           onChange={updateField}
           autoComplete="current-password"
@@ -56,6 +57,15 @@ function LoginForm({ onAuthenticated }) {
           required
         />
       </label>
+
+      <button
+        className="text-action"
+        type="button"
+        aria-pressed={showPassword}
+        onClick={() => setShowPassword((current) => !current)}
+      >
+        {showPassword ? "Hide password" : "Show password"}
+      </button>
 
       {error && <p className="form-error">{error}</p>}
 
