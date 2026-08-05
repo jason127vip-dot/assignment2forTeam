@@ -40,9 +40,14 @@ function TaskList({ tasks, error, isLoading, onRefresh, onUpdate, onRemove, onEr
     }
   }
 
-  async function removeTask(taskId) {
+  async function removeTask(task) {
+    const confirmed = window.confirm("Are you sure you want to delete this task?");
+    if (!confirmed) {
+      return;
+    }
+
     try {
-      await onRemove(taskId);
+      await onRemove(task.id);
     } catch (err) {
       onError(err.message);
     }
@@ -124,7 +129,7 @@ function TaskList({ tasks, error, isLoading, onRefresh, onUpdate, onRemove, onEr
                   <button type="button" onClick={() => startEditing(task)}>
                     Edit
                   </button>
-                  <button type="button" onClick={() => removeTask(task.id)}>
+                  <button type="button" onClick={() => removeTask(task)}>
                     Delete
                   </button>
                 </div>
