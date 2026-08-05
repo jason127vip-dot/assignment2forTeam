@@ -2,7 +2,12 @@ import { useState } from "react";
 import { apiRequest } from "../api/client";
 
 function RegisterForm({ onAuthenticated }) {
-  const [form, setForm] = useState({ username: "", email: "", password: "" });
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -16,12 +21,24 @@ function RegisterForm({ onAuthenticated }) {
   async function handleSubmit(event) {
     event.preventDefault();
     setError("");
+
+    if (form.password !== form.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
     setIsSubmitting(true);
+
+    const registrationData = {
+      username: form.username,
+      email: form.email,
+      password: form.password,
+    };
 
     try {
       const data = await apiRequest("/auth/register/", {
         method: "POST",
-        body: JSON.stringify(form),
+        body: JSON.stringify(registrationData),
       });
       onAuthenticated(data);
     } catch (err) {
@@ -61,6 +78,19 @@ function RegisterForm({ onAuthenticated }) {
           name="password"
           type="password"
           value={form.password}
+          onChange={updateField}
+          autoComplete="new-password"
+          minLength={8}
+          required
+        />
+      </label>
+
+      <label>
+        Confirm password
+        <input
+          name="confirmPassword"
+          type="password"
+          value={form.confirmPassword}
           onChange={updateField}
           autoComplete="new-password"
           minLength={8}
