@@ -154,7 +154,11 @@ function TaskList({ tasks, error, isLoading, onRefresh, onUpdate, onRemove, onEr
                   <button type="button" onClick={() => startEditing(task)}>
                     Edit
                   </button>
-                  <button type="button" onClick={() => removeTask(task)}>
+                   <button
+                       type="button"
+                        aria-label={`Delete ${task.title}`}
+                        onClick={() => removeTask(task)}
+                    >
                     Delete
                   </button>
                 </div>
