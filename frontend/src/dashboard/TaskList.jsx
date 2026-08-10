@@ -47,7 +47,9 @@ function TaskList({ tasks, error, isLoading, onRefresh, onUpdate, onRemove, onEr
   }
 
   async function removeTask(task) {
-    const confirmed = window.confirm("Are you sure you want to delete this task?");
+     const confirmed = window.confirm(
+    `Delete "${task.title}"? This action cannot be undone.`
+  );
     if (!confirmed) {
       return;
     }
@@ -152,7 +154,11 @@ function TaskList({ tasks, error, isLoading, onRefresh, onUpdate, onRemove, onEr
                   <button type="button" onClick={() => startEditing(task)}>
                     Edit
                   </button>
-                  <button type="button" onClick={() => removeTask(task)}>
+                   <button
+                       type="button"
+                        aria-label={`Delete ${task.title}`}
+                        onClick={() => removeTask(task)}
+                    >
                     Delete
                   </button>
                 </div>
