@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { apiRequest } from "../api/client";
 
+const MAX_USERNAME_LENGTH = 150;
+
 function LoginForm({ onAuthenticated }) {
   const savedUsername = localStorage.getItem("rememberedUsername") || "";
 
@@ -30,9 +32,22 @@ function LoginForm({ onAuthenticated }) {
     }
   }
 
+  function handleRememberUsernameChange(event) {
+    setRememberUsername(event.target.checked);
+  }
+
   function validateForm() {
-    if (!form.username.trim()) {
+    const trimmedUsername = form.username.trim();
+
+    if (!trimmedUsername) {
       setError("Please enter your username.");
+      return false;
+    }
+
+    if (trimmedUsername.length > MAX_USERNAME_LENGTH) {
+      setError(
+        `Username must not exceed ${MAX_USERNAME_LENGTH} characters.`
+      );
       return false;
     }
 
@@ -85,13 +100,11 @@ function LoginForm({ onAuthenticated }) {
           "Login failed. Please check your username and password and try again."
       );
 
-      // Clear the password after an unsuccessful login attempt.
       setForm((current) => ({
         ...current,
         password: "",
       }));
 
-      // Return the password input to its hidden state.
       setShowPassword(false);
     } finally {
       setIsSubmitting(false);
@@ -99,7 +112,7 @@ function LoginForm({ onAuthenticated }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="auth-form" noValidate>
+    <form onSubmit={handleSubmit}>
       <label htmlFor="login-username">Username</label>
       <input
         id="login-username"
@@ -108,11 +121,9 @@ function LoginForm({ onAuthenticated }) {
         value={form.username}
         onChange={updateField}
         autoComplete="username"
-        maxLength={50}
         disabled={isSubmitting}
         aria-invalid={Boolean(error)}
         required
-        autoFocus
       />
 
       <label htmlFor="login-password">Password</label>
@@ -144,7 +155,7 @@ function LoginForm({ onAuthenticated }) {
           type="checkbox"
           checked={rememberUsername}
           disabled={isSubmitting}
-          onChange={(event) => setRememberUsername(event.target.checked)}
+          onChange={handleRememberUsernameChange}
         />
         Remember username
       </label>
