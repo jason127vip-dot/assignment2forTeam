@@ -33,7 +33,13 @@ function LoginForm({ onAuthenticated }) {
   }
 
   function handleRememberUsernameChange(event) {
-    setRememberUsername(event.target.checked);
+    const isChecked = event.target.checked;
+
+    setRememberUsername(isChecked);
+
+    if (!isChecked) {
+      localStorage.removeItem("rememberedUsername");
+    }
   }
 
   function validateForm() {
@@ -121,6 +127,7 @@ function LoginForm({ onAuthenticated }) {
         value={form.username}
         onChange={updateField}
         autoComplete="username"
+        maxLength={MAX_USERNAME_LENGTH}
         disabled={isSubmitting}
         aria-invalid={Boolean(error)}
         required
